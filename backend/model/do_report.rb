@@ -90,16 +90,10 @@ class DOReport
     end
 
     ds = ArchivalObject
-      .select_all(:archival_object)
-      .where(Sequel.qualify(:archival_object, :id) => ids)
-      
-      =begin
-      this is the original query
-      .select_all(:archival_object)
-      .join_table(:left, :archival_object___c, :parent_id => :id)
-      .where(Sequel.qualify(:archival_object, :id) => ids, Sequel.qualify(:c, :id) => nil)
-      =end
-      
+           .select_all(:archival_object)
+           .join_table(:left, :archival_object___c, :parent_id => :id)
+           .where(Sequel.qualify(:archival_object, :id) => ids, Sequel.qualify(:c, :id) => nil)
+
     resource = nil
     containers = nil
     dates = get_dates(ids) if @extras.include?('dates')
