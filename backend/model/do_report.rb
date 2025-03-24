@@ -91,8 +91,7 @@ class DOReport
 
     ds = ArchivalObject
       .select_all(:archival_object)
-      .join_table(:left, :archival_object___c, :parent_id => :id)
-      .where(Sequel.qualify(:archival_object, :id) => ids, Sequel.qualify(:c, :id) => nil)
+      .where(Sequel.qualify(:archival_object, :id) => ids)
 
     resource = nil  
     containers = nil
@@ -101,32 +100,34 @@ class DOReport
     @tsv = generate_line(@columns.map {|col| col[:header]})
 
     ds.each do |ao|
-      puts "DEBUG: " + "title: " + ao[:title] + "level: " + ao[:level]
-      if @generate_ids && !ao[:component_id]
-        ao = generate_id(ao)
+      level = ao.level()
+      if level == "item" || level == "file" || level == "otherlevel" 
+        if @generate_ids && !ao[:component_id]
+          ao = generate_id(ao)
+        end
+
+        item = {'item' => ao}
+
+        unless resource
+          resource = Resource[ao.root_record_id]
+          containers = resource.quick_containers
+        end
+
+        item['resource'] = resource
+
+        (series, subseries, all) = find_ancestors(ao)
+        item['series'] = series
+        item['subseries'] = subseries
+
+        all.each do |ancestor|
+          item['box'] = containers[ancestor.id]
+          break if item['box']
+        end
+
+        item['dates'] = dates[ao.id] if @extras.include?('dates')
+
+        add_row_to_report(item)
       end
-
-      item = {'item' => ao}
-
-      unless resource
-        resource = Resource[ao.root_record_id]
-        containers = resource.quick_containers
-      end
-
-      item['resource'] = resource
-
-      (series, subseries, all) = find_ancestors(ao)
-      item['series'] = series
-      item['subseries'] = subseries
-
-      all.each do |ancestor|
-        item['box'] = containers[ancestor.id]
-        break if item['box']
-      end
-
-      item['dates'] = dates[ao.id] if @extras.include?('dates')
-
-      add_row_to_report(item)
     end
   end
 
