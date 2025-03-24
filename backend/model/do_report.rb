@@ -91,7 +91,8 @@ class DOReport
 
     ds = ArchivalObject
       .select_all(:archival_object)
-      .where(Sequel.qualify(:archival_object, :id) => ids)
+      .join_table(:left, :archival_object___c, :parent_id => :id)
+      .where(Sequel.qualify(:archival_object, :id) => ids, Sequel.qualify(:c, :level) => "file")
 
     resource = nil  
     containers = nil
