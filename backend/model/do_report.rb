@@ -101,6 +101,7 @@ class DOReport
     @tsv = generate_line(@columns.map {|col| col[:header]})
 
     ds.each do |ao|
+      puts "DEBUG: " + "title: " + ao[:title] + "level: " + ao[:level]
       if @generate_ids && !ao[:component_id]
         ao = generate_id(ao)
       end
