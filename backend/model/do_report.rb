@@ -103,7 +103,7 @@ class DOReport
       level = ao.level()
       puts level.class
       puts level
-      #if level == "item" || level == "file" || level == "otherlevel" 
+      if level == "item" || level == "file" || level == "otherlevel" 
         if @generate_ids && !ao[:component_id]
           ao = generate_id(ao)
         end
@@ -129,7 +129,7 @@ class DOReport
         item['dates'] = dates[ao.id] if @extras.include?('dates')
 
         add_row_to_report(item)
-      #end
+      end
     end
   end
 
