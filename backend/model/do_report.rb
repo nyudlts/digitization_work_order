@@ -90,10 +90,8 @@ class DOReport
     end
 
     ds = ArchivalObject
-    #.where(Sequel.qualify(:archival_object, :id) => ids)
       .select_all(:archival_object)
-           .join_table(:left, :archival_object___c, :parent_id => :id)
-           .where(Sequel.qualify(:archival_object, :id) => ids, Sequel.qualify(:c, :id) => nil)
+      .where(Sequel.qualify(:archival_object, :id) => ids)
 
     resource = nil  
     containers = nil
@@ -102,9 +100,11 @@ class DOReport
     @tsv = generate_line(@columns.map {|col| col[:header]})
 
     ds.each do |ao|
-      #level = ao.level()
+      level = ao.level()
+      puts level.class
+      puts level
       #if level == "item" || level == "file" || level == "otherlevel" 
-      if @generate_ids && !ao[:component_id]
+        if @generate_ids && !ao[:component_id]
           ao = generate_id(ao)
         end
 
@@ -129,7 +129,7 @@ class DOReport
         item['dates'] = dates[ao.id] if @extras.include?('dates')
 
         add_row_to_report(item)
-      end
+      #end
     end
   end
 
