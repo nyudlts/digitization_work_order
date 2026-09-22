@@ -101,8 +101,8 @@ class DOReport
 
     ds.each do |ao|
       level = ao.level()
-      if level == "item" || level == "file" || level == "otherlevel" 
-        if @generate_ids && !ao[:component_id]
+      #if level == "item" || level == "file" || level == "otherlevel" 
+      if @generate_ids && !ao[:component_id]
           ao = generate_id(ao)
         end
 
