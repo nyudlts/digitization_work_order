@@ -90,8 +90,10 @@ class DOReport
     end
 
     ds = ArchivalObject
+    #.where(Sequel.qualify(:archival_object, :id) => ids)
       .select_all(:archival_object)
-      .where(Sequel.qualify(:archival_object, :id) => ids)
+           .join_table(:left, :archival_object___c, :parent_id => :id)
+           .where(Sequel.qualify(:archival_object, :id) => ids, Sequel.qualify(:c, :id) => nil)
 
     resource = nil  
     containers = nil
@@ -100,7 +102,7 @@ class DOReport
     @tsv = generate_line(@columns.map {|col| col[:header]})
 
     ds.each do |ao|
-      level = ao.level()
+      #level = ao.level()
       #if level == "item" || level == "file" || level == "otherlevel" 
       if @generate_ids && !ao[:component_id]
           ao = generate_id(ao)
